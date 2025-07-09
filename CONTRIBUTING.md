@@ -313,7 +313,7 @@ We especially welcome contributions that:
 ### Channels
 - **GitHub Issues**: Bug reports, feature requests
 - **GitHub Discussions**: General questions, research discussions
-- **Email**: [contact@miosync.com] for private inquiries
+- **Email**: [m.iizumi@miosync.com] for private inquiries
 
 ### Response Times
 - **Bug Reports**: We aim to respond within 48 hours
