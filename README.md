@@ -3,6 +3,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![NumPy](https://img.shields.io/badge/numpy-%23013243.svg?style=flat&logo=numpy&logoColor=white)](https://numpy.org/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12tUo7u9wBRPjeGwgws4v_8_McsTkwfaS)
 
 A revolutionary fluid dynamics simulation framework based on **Semantic Tensor Theory** that solves the blow-up problem of traditional Navier-Stokes equations while maintaining structural stability.
 
@@ -17,6 +18,9 @@ Lambda³ (Lambda Cube) introduces a novel approach to fluid simulation using **S
 - **NSE Comparison**: Performance benchmarking against traditional methods
 
 ## 🚀 Key Features
+
+### 🎮 Try it Now!
+**[📱 Run Live Demo in Google Colab](https://colab.research.google.com/drive/12tUo7u9wBRPjeGwgws4v_8_McsTkwfaS)** - No installation required!
 
 ### Core Innovations
 - **Semantic Tensor Integration**: Unified representation of physical fields
@@ -35,7 +39,9 @@ Lambda³ (Lambda Cube) introduces a novel approach to fluid simulation using **S
 
 ## 📦 Installation
 
-### Requirements
+### Local Installation
+
+#### Requirements
 ```bash
 pip install numpy>=1.21.0 pandas>=1.3.0 matplotlib>=3.5.0 scipy>=1.7.0 networkx>=2.6.0
 ```
@@ -253,6 +259,9 @@ python -m pytest tests/
 - [ ] Distributed computing support
 
 ## 📚 Examples
+
+### 🚀 Quick Demo
+**[Try Lambda³ in Google Colab](https://colab.research.google.com/drive/12tUo7u9wBRPjeGwgws4v_8_McsTkwfaS)** - Interactive notebook with full simulation
 
 ### Basic Thermal Flow Simulation
 ```python
