@@ -20,13 +20,13 @@ from scipy.linalg import block_diag
 import networkx as nx         # Network/graph structures and analysis
 
 # ==============================
-# 🌍 Simulation Initialization Parameters
+# Simulation Initialization Parameters
 # ==============================
 class Lambda3SimConfig:
     # --- Simulation mode setting ---
     MODE = "thermal_flow"   # Simulation mode: affects parameter set and boundary conditions ("default", "stable", "turbulent", "simulation2", "super_stable")
 
-    # --- 🧪 Particle system / structural scale ---
+    # ---  Particle system / structural scale ---
     N = 200               # Number of fluid particles
     L = 180.0             # System size (domain length)
     T = 4.0               # Initial temperature (sets initial speed/entropy)
@@ -34,13 +34,13 @@ class Lambda3SimConfig:
     Nsteps = 150          # Total number of simulation steps
     DIMS = 2              # Number of spatial dimensions (2D system)
 
-    # --- 🌊 Viscosity (fluid property) ---
+    # ---  Viscosity (fluid property) ---
     VISCOSITY = 0.001  # Kinematic viscosity (ν), controls diffusion and momentum dissipation in the simulated fluid.
 
-    # --- 🌪️ Chaos detection window ---
+    # ---  Chaos detection window ---
     CHAOS_WINDOW = 30     # Window size for moving statistics in local chaos detection
 
-    # --- 🤠 Lambda3 network analysis parameters ---
+    # ---  Lambda3 network analysis parameters ---
     W_SPACE = 1.0                 # Spatial clustering weight for event/particle networks
     W_STEP = 0.5                  # Temporal distance weight in network analysis
     W_TOPO = 1.5                  # Topological weight (e.g., for $Q_\Lambda$ events)
@@ -48,13 +48,13 @@ class Lambda3SimConfig:
     THRESHOLD_LAMBDA3 = 5.0       # Threshold for Lambda3 distance-based event classification
     R_SPACE_FILTER = 12.0         # Radius for spatial smoothing in analysis
 
-    # --- 🔄 LambdaF dynamic updating ---
+    # ---  LambdaF dynamic updating ---
     ALPHA_LAMBDAF = 0.04          # Learning rate for updating the LambdaF progression vector
     NOISE_STRENGTH = 0.02         # Amplitude of noise added to progression dynamics
     K_NEIGHBORS = 5               # Number of neighbors for local structure calculation
     NEIGHBOR_RADIUS = 7.0         # Radius for defining local neighbors
 
-    # --- 💥 ΔΛC (Pulsation event) thresholds ---
+    # ---  ΔΛC (Pulsation event) thresholds ---
     EPSILON_MERGE = 1.0           # Threshold for merge events (structure similarity)
     THRESHOLD_SPLIT = 1.2         # Threshold for split events (structure divergence)
     EPSILON_ANNIHILATE = 0.1      # Threshold for annihilation (vanishing event)
@@ -101,7 +101,7 @@ class Lambda3SimConfig:
     NOISE_INJECTION_END = 50          # Noise End step
     INJECTION_NOISE_LEVEL = 0.02       # Level of injected external noise
 
-        @classmethod
+    @classmethod
     def apply_mode(cls):
         if cls.MODE == "super_stable":
             cls.ALPHA_LAMBDAF = 0.02
@@ -132,7 +132,7 @@ class Lambda3SimConfig:
             cls.RECT_OBSTACLES = []
             cls.CIRC_OBSTACLES = []
 
-        # 🔥 Additional: Special settings for observing thermal and fluid synchronization and jump events
+        #  Additional: Special settings for observing thermal and fluid synchronization and jump events
         elif cls.MODE == "thermal_flow":
             cls.ALPHA_LAMBDAF = 0.03          # Moderate LambdaF progression rate (emphasis on ease of observation)
             cls.NOISE_STRENGTH = 0.015        # Slightly lower noise strength for clearer jump observation
@@ -381,7 +381,7 @@ def detect_pulsation(tensor, neighbors, epsilon_T=0.05, epsilon_vorticity=0.1):
     # 温度勾配
     grad_T = np.mean([abs(n.temperature - tensor.temperature) for n in neighbors])
 
-    # 速度場の渦度 (簡略化)
+    # 速度場の渦度 (簡略かしてるからあとでどうにかしたい)
     vorticity = np.linalg.norm(np.mean([np.cross(n.velocity, tensor.velocity) for n in neighbors]))
 
     pulsation_event = grad_T > epsilon_T or vorticity > epsilon_vorticity
@@ -585,7 +585,7 @@ def rotational_field(position, center, omega, strength):
     norm = np.linalg.norm(rel) + 1e-8
     if norm == 0:  # Avoid division by zero at the origin
         return np.zeros_like(rel)
-    perp = np.array([-rel[1], rel[0]])  # Perpendicular vector (2D rotation)
+    perp = np.array([-rel[1], rel[0]]) 
     return strength * omega * perp / norm
 
 def log_chaos_diagnosis(step, is_chaos_net, is_chaos_qstd, dlc_trend, angle_std, norm_jump, eig1_sign_changes):
@@ -615,7 +615,7 @@ def build_lambda3_event_network(lambda3_events, positions_only, r_filter=Lambda3
     Returns a NetworkX graph for event clustering/chaos analysis.
     """
     if not lambda3_events or len(positions_only) == 0:
-        return nx.Graph()  # Return empty graph if no events
+        return nx.Graph() 
     tree = cKDTree(positions_only)
     pairs = tree.query_pairs(r=r_filter)
     G_lambda3 = nx.Graph()
@@ -635,7 +635,7 @@ def lambda3_progress_distance(pos1, step1, q1, pos2, step2, q2):
     """
     d_space = np.linalg.norm(pos1 - pos2)
     d_step  = abs(step1 - step2)
-    d_topo  = min(abs(q1 - q2), 2 * np.pi - abs(q1 - q2))  # Topological phase wrapping
+    d_topo  = min(abs(q1 - q2), 2 * np.pi - abs(q1 - q2)) 
     return (
         Lambda3SimConfig.W_SPACE * d_space +
         Lambda3SimConfig.W_STEP  * d_step +
