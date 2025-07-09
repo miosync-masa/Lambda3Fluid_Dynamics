@@ -43,7 +43,7 @@ Lambda³ (Lambda Cube) introduces a novel approach to fluid simulation using **S
 
 #### Requirements
 ```bash
-pip install numpy>=1.21.0 pandas>=1.3.0 matplotlib>=3.5.0 scipy>=1.7.0 networkx>=2.6.0
+pip install -r requirements.txt
 ```
 
 ### System Requirements
@@ -333,7 +333,7 @@ SOFTWARE.
 
 **IIZUMI MASAMICHI** / **Miosync**
 
-- Email: [contact@miosync.com]
+- Email: [info@miosync.com]
 - GitHub: [@miosync]
 - Research: Semantic Tensor Theory & Fluid Dynamics
 
