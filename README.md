@@ -175,7 +175,7 @@ def classify_transaction(tensor_a, tensor_b, neighbors):
 *Propagation of structural events through the system from the central source node. Shows emergent event networks beyond standard PDE approaches.*
 
 ### 2. Entropy & ΔΛC Event Dynamics
-[![Entropy and ΔΛC Event Count](https://imgur.com/zX1D7Ph.png)](https://imgur.com/a/zX1D7Ph)
+[![Entropy and ΔΛC Event Count](https://imgur.com/68oAblm.png)](https://imgur.com/68oAblm))
 *Local entropy rises, but is suppressed by structural jump events (ΔΛC)—direct evidence of dissipative structure in action.*
 
 ### 3. Kinetic Energy: NSE vs Lambda³
