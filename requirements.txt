@@ -1,0 +1,35 @@
+# Lambda³ Fluid Simulation Requirements
+# Basic numerical computing
+numpy>=1.21.0
+
+# Data analysis and manipulation
+pandas>=1.3.0
+
+# Visualization libraries
+matplotlib>=3.5.0
+
+# Scientific computing
+scipy>=1.7.0
+
+# Network analysis
+networkx>=2.6.0
+
+# Jupyter notebook support (optional but recommended)
+ipython>=7.0.0
+jupyter>=1.0.0
+
+# Additional visualization (optional)
+seaborn>=0.11.0
+
+# Performance optimization (optional)
+numba>=0.56.0
+
+# Progress bars for long simulations (optional)
+tqdm>=4.62.0
+
+# Memory profiling (development only)
+memory-profiler>=0.60.0
+
+# Testing framework (development only)
+pytest>=6.0.0
+pytest-cov>=3.0.0
