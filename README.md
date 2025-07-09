@@ -15,7 +15,7 @@ The simulation then computes how this unified tensor “flows” through space, 
 In essence, Lambda³ brings the “TensorFlow” philosophy—unified data, seamless flow—
 to the world of fluid dynamics and physical structures.
 
-## 🌊 Overview
+## Overview
 
 Lambda³ (Lambda Cube) introduces a novel approach to fluid simulation using **Semantic Tensors (Λ)** that integrate particle position, velocity, and temperature into a unified structural framework. This method enables:
 
@@ -25,9 +25,9 @@ Lambda³ (Lambda Cube) introduces a novel approach to fluid simulation using **S
 - **Chaos Diagnosis**: Network-based quantification of structural disorder
 - **NSE Comparison**: Performance benchmarking against traditional methods
 
-## 🚀 Key Features
+##  Key Features
 
-### 🎮 Try it Now!
+###  Try it Now!
 **[📱 Run Live Demo in Google Colab](https://colab.research.google.com/drive/12tUo7u9wBRPjeGwgws4v_8_McsTkwfaS)** - No installation required!
 
 ### Core Innovations
@@ -45,7 +45,7 @@ Lambda³ (Lambda Cube) introduces a novel approach to fluid simulation using **S
 | `super_stable` | Ultra-low noise, high precision | Long-term stability verification |
 | `simulation2` | Multiple obstacle configuration | Complex boundary flow analysis |
 
-## 📦 Installation
+##  Installation
 
 ### Local Installation
 
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 - **Memory**: 8GB+ RAM
 - **Storage**: 1GB+ free space
 
-## 🔧 Quick Start
+##  Quick Start
 
 ### Basic Usage
 ```python
@@ -96,7 +96,7 @@ config.EXTERNAL_INJECTION_OMEGA_ON = True  # Rotational forcing
 config.apply_mode()
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Core Classes
 
@@ -147,7 +147,7 @@ def classify_transaction(tensor_a, tensor_b, neighbors):
     """
 ```
 
-## 📊 Visualization & Analysis
+##  Visualization & Analysis
 
 ### Real-time Visualization
 - **Structural Entropy Maps**: Spatial distribution of local disorder
@@ -166,7 +166,7 @@ def classify_transaction(tensor_a, tensor_b, neighbors):
 - **Causality Analysis**: Directional correlation detection
 
 
-## 🚀 Key Results / Visualization
+##  Key Results / Visualization
 
 **Full results/figures:** [imgur album](https://imgur.com/a/1HLV8FZ)
 
@@ -187,7 +187,7 @@ def classify_transaction(tensor_a, tensor_b, neighbors):
 *Velocity field with thermal synchronization rate σₛ and topological invariant QΛ—all tracked together in real time.*
   
 
-## 🔬 Theoretical Background
+##  Theoretical Background
 
 ### Lambda³ Theory Core Concepts
 
@@ -219,7 +219,7 @@ Measures coherence between temperature gradient and velocity:
 - **Annihilate**: Efficiency-driven disappearance (eff < ε_annihilate)
 - **Create**: Divergence-density driven generation
 
-## ⚖️ NSE Comparison
+## ⚖ NSE Comparison
 
 ### Performance Benchmarking
 ```python
@@ -243,7 +243,7 @@ compare_pressure_fields(nse_results, l3_results)
 | Chaos Detection | Difficult | Automatic |
 | Stability | Conditional | Inherent |
 
-## 🛠️ Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -269,7 +269,7 @@ import matplotlib
 matplotlib.use('Agg')  # For headless environments
 ```
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
@@ -288,9 +288,9 @@ python -m pytest tests/
 - [ ] ML-based parameter optimization
 - [ ] Distributed computing support
 
-## 📚 Examples
+##  Examples
 
-### 🚀 Quick Demo
+###  Quick Demo
 **[Try Lambda³ in Google Colab](https://colab.research.google.com/drive/12tUo7u9wBRPjeGwgws4v_8_McsTkwfaS)** - Interactive notebook with full simulation
 
 ### Basic Thermal Flow Simulation
@@ -331,7 +331,7 @@ plot_event_network_with_energy(G_lambda3, positions, energies)
 - [Examples](examples/)
 - [FAQ](docs/faq.md)
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -359,7 +359,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## 🙋‍♂️ Author
+## 🙋‍♂ Author
 
 **IIZUMI MASAMICHI** / **Miosync**
 
@@ -367,7 +367,7 @@ SOFTWARE.
 - GitHub: [@miosync]
 - Research: Semantic Tensor Theory & Fluid Dynamics
 
-## 🏆 Citation
+##  Citation
 
 If you use Lambda³ in your research, please cite:
 
@@ -381,7 +381,7 @@ If you use Lambda³ in your research, please cite:
 }
 ```
 
-## 🌟 Acknowledgments
+##  Acknowledgments
 
 - Special thanks to the fluid dynamics and computational physics communities
 - Inspiration from chaos theory and complex systems research
