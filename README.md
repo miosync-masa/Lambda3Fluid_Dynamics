@@ -165,6 +165,28 @@ def classify_transaction(tensor_a, tensor_b, neighbors):
 - **Chaos Diagnosis**: Multi-indicator disorder quantification
 - **Causality Analysis**: Directional correlation detection
 
+
+## 🚀 Key Results / Visualization
+
+**Full results/figures:** [imgur album](https://imgur.com/a/1HLV8FZ)
+
+### 1. Structural Event Propagation
+[![Propagation Paths from Most Central Node](https://imgur.com/U1ZblZk.png)](https://imgur.com/U1ZblZk)
+*Propagation of structural events through the system from the central source node. Shows emergent event networks beyond standard PDE approaches.*
+
+### 2. Entropy & ΔΛC Event Dynamics
+[![Entropy and ΔΛC Event Count](https://imgur.com/zX1D7Ph.png)](https://imgur.com/zX1D7Ph)
+*Local entropy rises, but is suppressed by structural jump events (ΔΛC)—direct evidence of dissipative structure in action.*
+
+### 3. Kinetic Energy: NSE vs Lambda³
+[![Kinetic Energy Comparison](https://imgur.com/6dKQt6I.png)](https://imgur.com/6dKQt6I)
+*Lambda³ maintains stability where traditional NSE blows up. Quantitative demonstration of blow-up prevention.*
+
+### 4. Unified Field & Topology Visualization
+[![Velocity Field & Synchronization & QΛ](https://imgur.com/6p5tr7M.png)](https://imgur.com/6p5tr7M)
+*Velocity field with thermal synchronization rate σₛ and topological invariant QΛ—all tracked together in real time.*
+  
+
 ## 🔬 Theoretical Background
 
 ### Lambda³ Theory Core Concepts
