@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Vortex Simulation - Ultimate Edition with Tracers</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: #0a0e27;
+            cursor: crosshair;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        input[type="range"] {
+            width: 150px;
+        }
+        .value-display {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.active {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        .shape-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .shape-buttons button {
+            padding: 8px 15px;
+            font-size: 20px;
+        }
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .interaction-hint {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.85em;
+            opacity: 0.7;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌀 幾何学的渦シミュレーション - 究極版</h1>
+        <p class="subtitle">時間に依存しない純粋な幾何学的進行による Kármán 渦列と流れ場の完全可視化</p>
+        
+        <canvas id="canvas" width="900" height="400"></canvas>
+        <p class="interaction-hint">🎯 キャンバスをクリック＆ドラッグで障害物を移動！マウスホイールでサイズ変更！</p>
+        
+        <div class="controls">
+            <button onclick="toggleSimulation()">
+                <span id="playBtn">▶️ 開始</span>
+            </button>
+            <button onclick="resetSimulation()">🔄 リセット</button>
+            
+            <div class="control-group">
+                <label>障害物の形状</label>
+                <div class="shape-buttons">
+                    <button onclick="setShape('circle')" id="shapeCircle" class="active">⭕</button>
+                    <button onclick="setShape('square')" id="shapeSquare">⬜</button>
+                    <button onclick="setShape('triangle')" id="shapeTriangle">🔺</button>
+                    <button onclick="setShape('ellipse')" id="shapeEllipse">⬭</button>
+                    <button onclick="setShape('airfoil')" id="shapeAirfoil">✈️</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>流速 U</label>
+                <input type="range" id="flowSpeed" min="0.3" max="2" step="0.1" value="0.8">
+                <span class="value-display" id="flowSpeedValue">0.8</span>
+            </div>
+            
+            <div class="control-group">
+                <label>渦の強さ Γ</label>
+                <input type="range" id="gamma" min="5" max="20" step="0.5" value="14">
+                <span class="value-display" id="gammaValue">14.0</span>
+            </div>
+            
+            <div class="control-group">
+                <label>旋回ゲイン k</label>
+                <input type="range" id="turnGain" min="0" max="5" step="0.1" value="3.0">
+                <span class="value-display" id="turnGainValue">3.0</span>
+            </div>
+            
+            <div class="control-group">
+                <label>ステップ長 Δs</label>
+                <input type="range" id="stepLength" min="0.1" max="1" step="0.05" value="0.45">
+                <span class="value-display" id="stepLengthValue">0.45</span>
+            </div>
+            
+            <div class="control-group">
+                <label>拡散係数 ν</label>
+                <input type="range" id="diffusion" min="0.01" max="0.1" step="0.01" value="0.04">
+                <span class="value-display" id="diffusionValue">0.04</span>
+            </div>
+            
+            <div class="control-group">
+                <label>障害物サイズ</label>
+                <input type="range" id="obstacleSize" min="5" max="30" step="1" value="12">
+                <span class="value-display" id="obstacleSizeValue">12</span>
+            </div>
+            
+            <div class="control-group">
+                <label>トレーサ数</label>
+                <input type="range" id="tracerCount" min="0" max="4000" step="100" value="1200">
+                <span class="value-display" id="tracerCountValue">1200</span>
+            </div>
+            
+            <div class="control-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="showArrows" checked> ベクトル場
+                </label>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <span>渦の数: <strong id="vortexCount">0</strong></span> | 
+            <span>ステップ: <strong id="stepCount">0</strong></span> |
+            <span>Transaction: <strong id="transaction">0</strong></span> |
+            <span>トレーサ: <strong id="tracerCountActual">0</strong></span> |
+            <span>障害物: (<strong id="obstaclePos">0, 0</strong>)</span>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Utility functions
+        function norm(v) { 
+            return Math.hypot(v[0], v[1]); 
+        }
+        
+        function normalize(v) {
+            const n = norm(v) || 1e-12;
+            return [v[0]/n, v[1]/n];
+        }
+        
+        // Simulation parameters
+        let U = [0.8, 0.0];
+        let D = 12.0;
+        let gamma0 = 14.0;  // 強化！
+        let stepLength = 0.45;
+        let nuGeom = 0.04;
+        let turnGain = 3.0;  // 強化！
+        let releaseInterval = 1; // 毎ステップ放出！
+        let maxDistance = 200.0;
+        
+        // ===== 受動トレーサ（染料）と描画オプション =====
+        let tracers = [];
+        let tracerTarget = 1200;    // 目標トレーサ数
+        let tracerEmit = 60;        // 1フレームで補充する数
+        let tracerStep = 0.40;      // トレーサの弧長ステップ（幾何）
+        let showArrows = true;      // ベクトル場表示ON/OFF
+        
+        // 誘起計算の近傍カットオフ（計算量削減）
+        const RCUT = 25;            // [シミュ単位] これより遠い渦は無視
+        const RCUT2 = RCUT * RCUT;
+        
+        // Obstacle properties
+        let obstacle = {
+            x: 50,
+            y: canvas.height / 2,
+            shape: 'circle',
+            size: 12,
+            rotation: 0
+        };
+        
+        // Interaction state
+        let isDragging = false;
+        let dragOffset = {x: 0, y: 0};
+        
+        // State
+        let vortices = [];
+        let gammaSign = 1;
+        let stepCounter = 0;
+        let isRunning = false;
+        let animationId = null;
+        let transaction = 0;
+        
+        // Scaling for visualization
+        const scale = 4;
+        
+        class Vortex {
+            constructor(x, y, gamma, sigma) {
+                this.pos = [x, y];
+                this.gamma = gamma;
+                this.sigma = sigma;
+                this.age = 0;
+                this.trail = [];
+            }
+        }
+        
+        function setShape(shape) {
+            obstacle.shape = shape;
+            document.querySelectorAll('.shape-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('shape' + shape.charAt(0).toUpperCase() + shape.slice(1)).classList.add('active');
+        }
+        
+        function updateParameters() {
+            U[0] = parseFloat(document.getElementById('flowSpeed').value);
+            gamma0 = parseFloat(document.getElementById('gamma').value);
+            stepLength = parseFloat(document.getElementById('stepLength').value);
+            nuGeom = parseFloat(document.getElementById('diffusion').value);
+            D = parseFloat(document.getElementById('obstacleSize').value);
+            obstacle.size = D;
+            turnGain = parseFloat(document.getElementById('turnGain').value);
+            tracerTarget = parseInt(document.getElementById('tracerCount').value, 10);
+            showArrows = document.getElementById('showArrows').checked;
+            
+            document.getElementById('flowSpeedValue').textContent = U[0].toFixed(1);
+            document.getElementById('gammaValue').textContent = gamma0.toFixed(1);
+            document.getElementById('stepLengthValue').textContent = stepLength.toFixed(2);
+            document.getElementById('diffusionValue').textContent = nuGeom.toFixed(2);
+            document.getElementById('obstacleSizeValue').textContent = D.toFixed(0);
+            document.getElementById('turnGainValue').textContent = turnGain.toFixed(1);
+            document.getElementById('tracerCountValue').textContent = tracerTarget;
+            
+            // Strouhal-based release interval
+            updateReleaseInterval();
+        }
+        
+        function updateReleaseInterval() {
+            const St = 0.2; // Strouhal number
+            const ex = 0.8; // experimental coefficient
+            const xStep = Math.abs(normalize(U)[0]) * stepLength;
+            let ri = Math.max(1, Math.round((1/St) * (D / Math.max(xStep, 1e-3)) * ex));
+            releaseInterval = Math.min(ri, 6); // ★ 上限を6に制限！カルマン渦列を保証
+        }
+        
+        function getReleasePoints() {
+            const points = [];
+            const ox = (obstacle.x - 50) / scale;
+            const oy = -(obstacle.y - canvas.height/2) / scale;
+            const halfSize = obstacle.size / 2;
+            
+            switch(obstacle.shape) {
+                case 'circle':
+                    points.push([ox + halfSize, oy + halfSize * 0.7]);
+                    points.push([ox + halfSize, oy - halfSize * 0.7]);
+                    break;
+                case 'ellipse':
+                    points.push([ox + halfSize * 0.8, oy + halfSize * 0.6]);
+                    points.push([ox + halfSize * 0.8, oy - halfSize * 0.6]);
+                    break;
+                case 'square':
+                    points.push([ox + halfSize, oy + halfSize]);
+                    points.push([ox + halfSize, oy - halfSize]);
+                    break;
+                case 'triangle':
+                    points.push([ox - halfSize * 0.3, oy + halfSize * 0.5]);
+                    points.push([ox - halfSize * 0.3, oy - halfSize * 0.5]);
+                    break;
+                case 'airfoil':
+                    points.push([ox + halfSize * 0.9, oy + halfSize * 0.15]);
+                    points.push([ox + halfSize * 0.9, oy - halfSize * 0.15]);
+                    break;
+                default:
+                    points.push([ox, oy + halfSize]);
+                    points.push([ox, oy - halfSize]);
+            }
+            return points;
+        }
+        
+        function computeInducedOnly(vortex, allVortices) {
+            let ux = 0, uy = 0;
+            for (const other of allVortices) {
+                if (other === vortex) continue;
+                const dx = vortex.pos[0] - other.pos[0];
+                const dy = vortex.pos[1] - other.pos[1];
+                const a2 = Math.max(other.sigma * other.sigma, 1e-6);
+                const r2 = dx*dx + dy*dy;  // 素の距離2乗
+                const r2s = r2 + a2;        // コアで正則化
+                const cutoff = 1.0 - Math.exp(-r2 / (2*a2));  // 近傍で滑らかに0→1
+                const factor = (other.gamma / (2*Math.PI*r2s)) * cutoff;
+                ux += -dy * factor;
+                uy +=  dx * factor;
+            }
+            return [ux, uy];
+        }
+        
+        function velocityAt(pos, allVortices) {
+            // 基流 + 近傍渦の誘起（Lamb-Oseen風のカットオフ）
+            let vx = U[0], vy = U[1];
+            for (const v of allVortices) {
+                const dx = pos[0] - v.pos[0];
+                const dy = pos[1] - v.pos[1];
+                const r2 = dx*dx + dy*dy;
+                if (r2 > RCUT2) continue;  // 遠方は打ち切り
+                const a2 = Math.max(v.sigma*v.sigma, 1e-6);
+                const r2s = r2 + a2;
+                const cutoff = 1.0 - Math.exp(-r2/(2*a2));
+                const f = (v.gamma/(2*Math.PI*r2s)) * cutoff;
+                vx += -dy * f;
+                vy +=  dx * f;
+            }
+            return [vx, vy];
+        }
+        
+        function spawnTracers(n) {
+            const xLeft = ((obstacle.x - 50) / scale) - 10; // 障害物より少し左
+            for (let i = 0; i < n; i++) {
+                const x = xLeft + Math.random() * 5;
+                const y = (Math.random() - 0.5) * (canvas.height / scale);
+                tracers.push({ pos:[x, y], age:0 });
+            }
+        }
+        
+        function simulationStep() {
+            // Release new vortices
+            if (stepCounter === 0) {
+                // ★ 初手で対称に＋Γ/−Γを同時放出（列の起動を速める）
+                const pts = getReleasePoints();
+                if (pts.length >= 2) {
+                    vortices.push(new Vortex(pts[0][0], pts[0][1], +gamma0, 0.5));
+                    vortices.push(new Vortex(pts[1][0], pts[1][1], -gamma0, 0.5));
+                }
+            } else if (stepCounter % releaseInterval === 0) {
+                const pts = getReleasePoints();
+                const idx = (gammaSign > 0) ? 0 : 1;
+                if (pts.length >= 2 && idx < pts.length) {
+                    vortices.push(new Vortex(pts[idx][0], pts[idx][1], gamma0 * gammaSign, 0.5));
+                    gammaSign *= -1; // 交互
+                }
+            }
+            
+            // Update vortices
+            let updatedVortices = [];
+            for (let vortex of vortices) {
+                const vi = computeInducedOnly(vortex, vortices);
+                const vi_hat = normalize(vi);
+                const u_hat = normalize(U);
+                
+                const dir = normalize([
+                    u_hat[0] + turnGain * vi_hat[0],
+                    u_hat[1] + turnGain * vi_hat[1]
+                ]);
+                
+                if (vortex.age % 5 === 0 && vortex.trail.length < 30) {
+                    vortex.trail.push([...vortex.pos]);
+                }
+                
+                vortex.pos[0] += dir[0] * stepLength;
+                vortex.pos[1] += dir[1] * stepLength;
+                vortex.sigma = Math.sqrt(vortex.sigma * vortex.sigma + 2 * nuGeom * stepLength);
+                vortex.age++;
+                
+                if (vortex.pos[0] < maxDistance) {
+                    updatedVortices.push(vortex);
+                }
+            }
+            vortices = updatedVortices;
+            
+            // --- トレーサ更新（幾何発展：向きのみ使用、弧長一定） ---
+            if (tracers.length < tracerTarget) {
+                spawnTracers(Math.min(tracerEmit, tracerTarget - tracers.length));
+            }
+            
+            let newTracers = [];
+            for (const t of tracers) {
+                const v = velocityAt(t.pos, vortices);
+                const dir = normalize(v);  // 速度の向きだけ採用
+                t.pos[0] += dir[0] * tracerStep;  // 弧長で前進 → "時間なし"
+                t.pos[1] += dir[1] * tracerStep;
+                t.age++;
+                
+                // 画面外へ出た粒子は捨てる
+                const inX = (t.pos[0] > -20) && (t.pos[0] < maxDistance);
+                const inY = (Math.abs(t.pos[1]) < (canvas.height/(2*scale) + 5));
+                if (inX && inY) newTracers.push(t);
+            }
+            tracers = newTracers;
+            
+            stepCounter++;
+            transaction++;
+            obstacle.rotation += 0.005;
+            
+            updateStats();
+        }
+        
+        function drawObstacle() {
+            ctx.save();
+            ctx.translate(obstacle.x, obstacle.y);
+            
+            const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, obstacle.size * scale);
+            gradient.addColorStop(0, '#666');
+            gradient.addColorStop(1, '#333');
+            ctx.fillStyle = gradient;
+            
+            switch(obstacle.shape) {
+                case 'circle':
+                    ctx.beginPath();
+                    ctx.arc(0, 0, obstacle.size * scale / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                    break;
+                case 'square':
+                    ctx.fillRect(-obstacle.size * scale / 2, -obstacle.size * scale / 2, 
+                                obstacle.size * scale, obstacle.size * scale);
+                    break;
+                case 'triangle':
+                    ctx.beginPath();
+                    ctx.moveTo(obstacle.size * scale / 2, 0);
+                    ctx.lineTo(-obstacle.size * scale / 2, obstacle.size * scale / 2);
+                    ctx.lineTo(-obstacle.size * scale / 2, -obstacle.size * scale / 2);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+                case 'ellipse':
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, obstacle.size * scale * 0.7, obstacle.size * scale / 2, 
+                               0, 0, 2 * Math.PI);
+                    ctx.fill();
+                    break;
+                case 'airfoil':
+                    ctx.rotate(obstacle.rotation);
+                    ctx.beginPath();
+                    ctx.moveTo(obstacle.size * scale, 0);
+                    ctx.quadraticCurveTo(obstacle.size * scale * 0.5, -obstacle.size * scale * 0.3, 
+                                        -obstacle.size * scale * 0.5, -obstacle.size * scale * 0.1);
+                    ctx.quadraticCurveTo(-obstacle.size * scale * 0.7, 0, 
+                                        -obstacle.size * scale * 0.5, obstacle.size * scale * 0.1);
+                    ctx.quadraticCurveTo(obstacle.size * scale * 0.5, obstacle.size * scale * 0.2, 
+                                        obstacle.size * scale, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+            }
+            ctx.restore();
+        }
+        
+        function draw() {
+            // Clear with trail effect
+            ctx.fillStyle = 'rgba(10, 14, 39, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // --- トレーサ描画（速度に応じて色味を変える） ---
+            for (const t of tracers) {
+                const v = velocityAt(t.pos, vortices);
+                const spd = norm(v);
+                const hue = 200 - Math.min(150, spd * 60); // 速いほど暖色寄り
+                const x = 50 + t.pos[0] * scale;
+                const y = canvas.height/2 - t.pos[1] * scale;
+                const opacity = Math.max(0.3, 1 - t.age / 500);
+                
+                // Glow effect for tracers
+                const glow = ctx.createRadialGradient(x, y, 0, x, y, 3);
+                glow.addColorStop(0, `hsla(${hue}, 100%, 70%, ${opacity})`);
+                glow.addColorStop(1, `hsla(${hue}, 100%, 50%, 0)`);
+                
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2*Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = `hsla(${hue}, 100%, 80%, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(x, y, 1.2, 0, 2*Math.PI);
+                ctx.fill();
+            }
+            
+            // Draw obstacle
+            drawObstacle();
+            
+            // Draw vortices
+            for (let vortex of vortices) {
+                const x = 50 + vortex.pos[0] * scale;
+                const y = canvas.height/2 - vortex.pos[1] * scale;
+                
+                // Draw trail
+                if (vortex.trail.length > 1) {
+                    ctx.strokeStyle = `hsla(${vortex.gamma > 0 ? 0 : 240}, 100%, 60%, 0.15)`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    for (let i = 0; i < vortex.trail.length; i++) {
+                        const tx = 50 + vortex.trail[i][0] * scale;
+                        const ty = canvas.height/2 - vortex.trail[i][1] * scale;
+                        if (i === 0) ctx.moveTo(tx, ty);
+                        else ctx.lineTo(tx, ty);
+                    }
+                    ctx.stroke();
+                }
+                
+                const hue = vortex.gamma > 0 ? 0 : 240;
+                const opacity = Math.max(0.3, 1 - vortex.age / 300);
+                
+                // Glow effect
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, vortex.sigma * scale * 3);
+                gradient.addColorStop(0, `hsla(${hue}, 100%, 70%, ${opacity * 0.8})`);
+                gradient.addColorStop(0.5, `hsla(${hue}, 100%, 60%, ${opacity * 0.4})`);
+                gradient.addColorStop(1, `hsla(${hue}, 100%, 50%, 0)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, Math.max(3, vortex.sigma * scale * 3), 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Core
+                ctx.fillStyle = `hsla(${hue}, 100%, 80%, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(x, y, Math.max(1.5, vortex.sigma * scale), 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // ベクトル場の矢印（オプション）
+            if (showArrows) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.lineWidth = 0.8;
+                const stride = 32; // 画素間隔（粗さ）
+                for (let px = 50; px <= 50 + maxDistance*scale; px += stride) {
+                    for (let py = 20; py < canvas.height - 20; py += stride) {
+                        const xs = (px - 50) / scale;
+                        const ys = -(py - canvas.height/2) / scale;
+                        const v = velocityAt([xs, ys], vortices);
+                        const d = normalize(v);
+                        const L = 10; // 矢印長（画素）
+                        ctx.beginPath();
+                        ctx.moveTo(px, py);
+                        ctx.lineTo(px + L*d[0], py - L*d[1]);
+                        ctx.stroke();
+                        
+                        // Arrow head
+                        ctx.beginPath();
+                        ctx.arc(px + L*d[0], py - L*d[1], 1.5, 0, 2*Math.PI);
+                        ctx.fill();
+                    }
+                }
+            }
+        }
+        
+        function animate() {
+            if (!isRunning) return;
+            
+            simulationStep();
+            draw();
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function toggleSimulation() {
+            isRunning = !isRunning;
+            document.getElementById('playBtn').textContent = isRunning ? '⏸️ 停止' : '▶️ 開始';
+            
+            if (isRunning) {
+                // ★ 可視化前に数十ステップ回して列の芽を作る（描画なし）
+                for (let k = 0; k < 30; k++) simulationStep();
+                animate();
+            }
+        }
+        
+        function resetSimulation() {
+            isRunning = false;
+            document.getElementById('playBtn').textContent = '▶️ 開始';
+            vortices = [];
+            tracers = [];
+            stepCounter = 0;
+            transaction = 0;
+            gammaSign = 1;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateStats();
+            draw();
+        }
+        
+        function updateStats() {
+            document.getElementById('vortexCount').textContent = vortices.length;
+            document.getElementById('stepCount').textContent = stepCounter;
+            document.getElementById('transaction').textContent = transaction;
+            document.getElementById('tracerCountActual').textContent = tracers.length;
+            document.getElementById('obstaclePos').textContent = 
+                `${Math.round((obstacle.x - 50)/scale)}, ${Math.round(-(obstacle.y - canvas.height/2)/scale)}`;
+        }
+        
+        // Mouse interaction
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            
+            const dx = mx - obstacle.x;
+            const dy = my - obstacle.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < obstacle.size * scale) {
+                isDragging = true;
+                dragOffset.x = dx;
+                dragOffset.y = dy;
+                canvas.style.cursor = 'grabbing';
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            obstacle.x = e.clientX - rect.left - dragOffset.x;
+            obstacle.y = e.clientY - rect.top - dragOffset.y;
+            
+            updateStats();
+            if (!isRunning) draw();
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            canvas.style.cursor = 'crosshair';
+        });
+        
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -1 : 1;
+            const newSize = Math.max(5, Math.min(30, obstacle.size + delta));
+            obstacle.size = newSize;
+            D = newSize;
+            document.getElementById('obstacleSize').value = newSize;
+            document.getElementById('obstacleSizeValue').textContent = newSize;
+            if (!isRunning) draw();
+        });
+        
+        // Event listeners
+        document.getElementById('flowSpeed').addEventListener('input', updateParameters);
+        document.getElementById('gamma').addEventListener('input', updateParameters);
+        document.getElementById('stepLength').addEventListener('input', updateParameters);
+        document.getElementById('diffusion').addEventListener('input', updateParameters);
+        document.getElementById('obstacleSize').addEventListener('input', updateParameters);
+        document.getElementById('turnGain').addEventListener('input', updateParameters);
+        document.getElementById('tracerCount').addEventListener('input', updateParameters);
+        document.getElementById('showArrows').addEventListener('change', updateParameters);
+        
+        // Initialize
+        updateParameters();
+        draw();
+    </script>
+</body>
+</html>
